@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang='cn' xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>二级分类列表</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta content="" name="description"/>
+    <meta content="" name="author"/>
+    <link rel="shortcut icon" th:href="@{/image/walmart.png}" type="image/x-icon"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/bootstrap-responsive.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-metro.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-responsive.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css" id="style_color"/>
+    <link th:href="@{/css/uniform.default.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/pagination.css}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <h3 class="page-title"><i class="fa fa-object-group"></i> 分类管理</h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-home"></i>分类管理</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li>
+                <a href="#">二级分类</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row-fluid">
+        <div class="portlet box green">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-reorder"></i>
+                    二级分类列表
+                </div>
+                <div class="tools">
+                    <button onclick="window.location.href='toAdd.html?type=2';" class="btn mini"><i class="fa fa-plus"></i>添加
+                    </button>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table id="cateTable" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>名称</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <div id="Pagination" class="pagination align_right"><!-- 这里显示分页 --></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/jquery-1.10.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery-migrate-1.2.1.min.js}" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui-1.10.1.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script th:src="@{/js/jquery-ui-1.10.1.custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.blockui.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.cookie.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.uniform.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.pagination.js}" type="text/javascript"></script>
+<script th:src="@{/js/app.js}" type="text/javascript"></script>
+<script>
+    //			<![CDATA[
+    function edit(id) {
+        window.location.href = "toEdit.html?type=2&id=" + id;
+    }
+
+    function del(id, btn) {
+        if (!confirm("是否删除id为" + id + "的分类？")) {
+            return;
+        }
+        $.ajax({
+            url: "del.do?id=" + id,
+            type: "get",
+            success: function (result) {
+                if (result.state == 0) {
+                    if (result.data == true) {
+                        alert("删除成功！");
+                        $(btn).parent().parent().fadeOut();
+                    } else {
+                        alert("删除失败！");
+                    }
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    }
+    var pagetotal;
+    $(function () {
+        $.ajax({
+            url: "getTotal.do?type=2",
+            type: "get",
+            success: function (result) {
+                if (result.state == 0) {
+                    pagetotal = result.data;
+                    $("#Pagination").pagination(pagetotal, {
+                        num_edge_entries: 1, //边缘页数
+                        num_display_entries: 5, //主体页数
+                        callback: pageselectCallback,
+                        items_per_page: 7, //每页显示7项
+                        prev_text: "前一页",
+                        next_text: "后一页"
+                    });
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    });
+
+    function pageselectCallback(page_index, jq) {
+        $.ajax({
+            type: "get",
+            url: "list.do?type=2&pageindex=" + page_index,
+            success: function (result) {
+                if (result.state == 0) {
+                    showList(result.data);
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    }
+
+    function showList(data) {
+        if (!data || !data.length > 0) {
+            return;
+        }
+        //清空表
+        var tbody = $("#cateTable tbody").eq(0);
+        tbody.html("");
+        for (var i = 0; i < data.length; i++) {
+            var tr = $("<tr style='display:none;'></tr>");
+            tr.append($("<td></td>").text(data[i].id));
+            tr.append($("<td></td>").text(data[i].cname));
+            tr.append($("<td></td>")
+                .append($('<button style="margin-right:20px;" class="btn mini green" onclick="edit(' + data[i].id + ')"><i class="fa fa-edit"></i> 编辑</button>'))
+                .append($('<button class="btn mini red" onclick="del(' + data[i].id + ',this)"><i class="fa fa-trash"></i> 删除</button>')));
+            tbody.append(tr);
+            tr.fadeIn();
+        }
+
+    }
+
+    //			]]>
+</script>
+</body>
+
+</html>

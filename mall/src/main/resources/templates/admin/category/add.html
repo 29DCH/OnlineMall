@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang='cn' xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>添加一级分类</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta content="" name="description"/>
+    <meta content="" name="author"/>
+    <link rel="shortcut icon" th:href="@{/image/walmart.png}" type="image/x-icon"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/bootstrap-responsive.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-metro.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-responsive.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css" id="style_color"/>
+    <link th:href="@{/css/uniform.default.css}" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <h3 class="page-title"><i class="fa fa-object-group"></i> 分类管理</h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="list.html"><i class="fa fa-home"></i>分类管理</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li>
+                <a href="#">添加一级分类</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row-fluid">
+        <div class="portlet box green">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-reorder"></i>
+                    添加一级分类
+                </div>
+            </div>
+            <div class="portlet-body">
+                <form class="form-horizontal" action="#">
+                    <div class="control-group">
+                        <label class="control-label">一级分类名称：</label>
+                        <div class="controls">
+                            <input name="cname" type="text" class="m-wrap media"/>
+                            <input name="type" type="hidden" value="1"/>
+                            <input name="parentId" type="hidden" value="0"/>
+                            <span class="help-inline">name</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" onclick="create()" class="btn blue"><i class="fa fa-check"></i>确定</button>&emsp;
+                        <button type="button" id="back" class="btn"><i class="fa fa-times"></i>返回</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/jquery-1.10.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery-migrate-1.2.1.min.js}" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui-1.10.1.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script th:src="@{/js/jquery-ui-1.10.1.custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.blockui.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.cookie.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.uniform.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/app.js}" type="text/javascript"></script>
+
+<script type="text/javascript">
+//    <![CDATA[
+    $(function () {
+        $("#back").click(function () {
+            history.back();
+        });
+    });
+
+    function create() {
+        if (!$("[name='cname']").val()) {
+            alert("请输入分类名称！");
+            return;
+        }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "add.do",
+            data: $('.form-horizontal').serialize(),// 你的formid
+            async: false,
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (result) {
+                if (result.state == 0) {
+                    alert("创建成功！");
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    }
+//    ]]>
+</script>
+</body>
+
+</html>
+
+

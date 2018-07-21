@@ -1,0 +1,253 @@
+<!--后台管理页面-->
+<!DOCTYPE html>
+
+<html lang='cn' xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+
+    <title>商城后台管理</title>
+
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+
+    <meta content="" name="description"/>
+
+    <meta content="" name="author"/>
+
+    <link th:href="@{/b4/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/bootstrap-responsive.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/style-metro.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/style-responsive.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css" id="style_color"/>
+
+    <link th:href="@{/css/uniform.default.css}" rel="stylesheet" type="text/css"/>
+
+    <style type="text/css">
+        body {
+            background-color: #3d3d3d !important;
+        }
+    </style>
+
+
+    <link rel="shortcut icon" th:href="@{/image/walmart.png}" type="image/x-icon"/>
+
+</head>
+
+
+<body class="page-header-fixed page-footer-fixed page-sidebar-fixed">
+
+
+<div class="header navbar navbar-inverse navbar-fixed-top">
+
+
+    <div class="navbar-inner">
+
+        <div class="container-fluid">
+
+            <a class="brand" href="/mall/" title="回到首页" style="margin-left: 10px;">
+                <!--<img src="media/image/logo.png" class="" alt="logo"/>-->
+                <!--<i class="fa fa-cubes"></i>-->
+                <b>商城后台管理系统</b>
+            </a>
+            <a href="javascript:;" class="btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+                <img th:src="@{/image/menu-toggler.png}" alt=""/>
+            </a>
+            <ul class="nav pull-right">
+
+                <li class="dropdown user ">
+
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                        <i class="fa fa-user-circle"></i>
+
+                        <span th:text="${session.login_user.username}"></span>
+
+                        <i class="fa fa-caret-down"></i>
+
+                    </a>
+
+                    <ul class="dropdown-menu ">
+                        <!--
+                            <li class="divider"></li>
+                        -->
+                        <li><a href="javascript:logout();"><i class="fa fa-key"></i>注销</a></li>
+
+                    </ul>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="page-container">
+    <div class="page-sidebar nav-collapse collapse">
+        <ul class="page-sidebar-menu" style="background-color: white">
+            <li>
+                <div class="sidebar-toggler hidden-phone" style="color: #FFFFFF;text-align: center;background: #3d3d3d;">
+                    <i class="fa fa-2x fa-bars"></i>
+                </div>
+            </li>
+            <li>
+                <form class="sidebar-search">
+
+                    <div class="input-box">
+
+                        <a href="javascript:;" class="remove"></a>
+
+                        <!--<input type="text" placeholder="搜索..."/>-->
+
+                        <!--<input type="button" class="submit" value=" "/>-->
+                    </div>
+                </form>
+            </li>
+            <li class="start active " id="user">
+                <a href="javascript:changePage('user');">
+                    <i class="fa fa-user-circle"></i>
+                    <span class="title" style="font-color:black;font-weight: bold">用户管理</span>
+                    <span class="selected"></span>
+                </a>
+            </li>
+
+            <li class="" id="category">
+
+                <a href="#">
+
+                    <i class="fa fa-object-group"></i>
+
+                    <span class="title" style="color:black;font-weight: bold">分类管理</span>
+
+                    <span class="arrow "></span>
+
+                </a>
+
+                <ul class="sub-menu">
+
+                    <li id="category_1">
+                        <a href="javascript:changePage('category');">
+                            <i class="fa fa-list" style="color:black;font-weight: bold"></i>
+                            一级分类
+                        </a>
+                    </li>
+                    <li id="categorysec">
+                        <a href="javascript:changePage('categorySec');">
+                            <i class="fa fa-list" style="color:black;font-weight: bold"></i>
+                            二级分类
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="" id="order">
+
+                <a href="javascript:changePage('order');">
+                    <i class="fa fa-file-text"></i>
+                    <span class="title" style="color:black;font-weight: bold">订单管理</span>
+                </a>
+
+            </li>
+            <li class="last" id="product">
+
+                <a href="javascript:changePage('product');">
+                    <i class="fa fa-shopping-bag"></i>
+                    <span class="title" style="color:black;font-weight: bold">商品管理</span>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+
+    <div id="content" class="page-content">
+        <iframe id="mainFrame" frameborder="0" src=""></iframe>
+    </div>
+
+
+</div>
+
+
+<div class="footer">
+
+    <div class="footer-inner" style="width: 100%;text-align: center;">
+
+        2018 &copy; LJQ
+        <div class="footer-tools">
+
+				<span class="go-top" title="回到顶部">
+
+				<i class="fa fa-chevron-up"></i>
+
+				</span>
+
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/jquery-1.10.1.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/jquery-migrate-1.2.1.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/jquery-ui-1.10.1.custom.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/b4/bootstrap.min.js}" type="text/javascript"></script>
+
+
+<script th:src="@{media/js/excanvas.min.js}"></script>
+
+<script th:src="@{media/js/respond.min.js}"></script>
+
+<script th:src="@{/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/jquery.blockui.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/jquery.cookie.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/jquery.uniform.min.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/app.js}" type="text/javascript"></script>
+
+<script th:src="@{/js/index.js}" type="text/javascript"></script>
+
+<script>
+    jQuery(document).ready(function () {
+        App.init();
+    });
+
+    function changePage(page) {
+        $(".page-sidebar-menu li").removeClass("active");
+        if ('categorySec' == page) {
+            $("#category").addClass("active").find("a").eq(0).append($('<span class="selected"></span>'));
+            $("#categorysec").addClass("active");
+            $("#mainFrame").attr("src", "classification/toList.html?type=2");
+            return;
+        } else if ('category' == page) {
+            $("#category").addClass("active").find("a").eq(0).append($('<span class="selected"></span>'));
+            $("#category_1").addClass("active");
+            $("#mainFrame").attr("src", "classification/toList.html?type=1");
+            return;
+        } else {
+            $("#" + page).addClass("active").find("a").eq(0).append($('<span class="selected"></span>'));
+        }
+        $("#mainFrame").attr("src", page + "/toList.html");
+    }
+    changePage("user");
+    function logout() {
+        if (confirm("确定退出登录？")) {
+            window.location.href = "logout.do";
+        }
+    }
+</script>
+</body>
+</html>

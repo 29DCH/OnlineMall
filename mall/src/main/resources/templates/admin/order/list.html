@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang='cn' xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>订单列表</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta content="" name="description"/>
+    <meta content="" name="author"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/bootstrap-responsive.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-metro.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/style-responsive.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet" type="text/css" id="style_color"/>
+    <link th:href="@{/css/uniform.default.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/pagination.css}" rel="stylesheet" type="text/css"/>
+    <link rel="shortcut icon" th:href="@{/image/walmart.png}" type="image/x-icon"/>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <h3 class="page-title"><i class="fa fa-file-text"></i> 订单管理</h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-home"></i>订单管理</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li>
+                <a href="#">订单列表</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row-fluid">
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-reorder"></i>
+                    订单列表
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table id="orderTable" class="table table-advance table-hover">
+                    <thead>
+                    <tr>
+                        <th>订单编号</th>
+                        <th>订单金额</th>
+                        <th>收货人</th>
+                        <th>订单状态</th>
+                        <th>订单时间</th>
+                        <th width="50%">订单详情</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div id="Pagination" class="pagination align_right"><!-- 这里显示分页 --></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/jquery-1.10.1.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery-migrate-1.2.1.min.js}" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui-1.10.1.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script th:src="@{/js/jquery-ui-1.10.1.custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.blockui.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.cookie.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.uniform.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/app.js}" type="text/javascript"></script>
+<script th:src="@{/js/jquery.pagination.js}" type="text/javascript"></script>
+<script th:inline="javascript" type="text/javascript">
+//    <![CDATA[
+    var pagetotal;
+    $(function () {
+        App.init();
+        $.ajax({
+            url: "getTotal.do",
+            type: "get",
+            success: function (result) {
+                if (result.state == 0) {
+                    pagetotal = result.data;
+                    $("#Pagination").pagination(pagetotal, {
+                        num_edge_entries: 1, //边缘页数
+                        num_display_entries: 5, //主体页数
+                        callback: pageselectCallback,
+                        items_per_page: 15, //每页显示7项
+                        prev_text: "前一页",
+                        next_text: "后一页"
+                    });
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    });
+
+    function pageselectCallback(page_index, jq) {
+        $.ajax({
+            type: "get",
+            url: "list.do?pageindex=" + page_index,
+            success: function (result) {
+                if (result.state == 0) {
+                    showList(result.data);
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    }
+
+    function showList(data) {
+        if (!data || !data.length > 0) {
+            return;
+        }
+        //清空表
+        var tbody = $("#orderTable tbody").eq(0);
+        tbody.html("");
+        for (var i = 0; i < data.length; i++) {
+            var tr = $("<tr style='display:none;'></tr>");
+            tr.append($("<td></td>").text(data[i].id));
+            tr.append($("<td></td>").text("￥" + data[i].total));
+            tr.append($("<td></td>").text(data[i].name == null ? '' : data[i].name));
+            var state = data[i].state;
+            if (state == 1) {
+                tr.append($("<td></td>").html('<span style="border-radius: 5px !important;" class="label label-important">未付款</span>'));
+            } else if (state == 2) {
+                tr.append($("<td></td>").html("<button onclick='send(" + data[i].id + ",this)' class='btn red'>发货</button>"));
+            } else if (state == 3) {
+                tr.append($("<td></td>").html('<span style="border-radius: 5px !important;" class="label label-info">等待收货</span>'));
+            } else if (state == 4) {
+                tr.append($("<td></td>").html('<span style="border-radius: 5px !important;" class="label label-success">订单完成</span>'));
+            } else {
+                tr.append($("<td></td>").html('<span style="border-radius: 5px !important;" class="label label-default">未知状态</span>'));
+            }
+            tr.append($("<td></td>").html('<span class="label label-default" style="border-radius: 5px !important;">' + data[i].orderTime + '</span>'));
+            tr.append($("<td></td>")
+                .append($('<div style="margin:0;" class="portlet box green"><div id="detail_' + i + '" onmouseenter="getDetail(' + data[i].id + ',\'detail_' + i + '\')" class="portlet-title"><div class="caption">订单详情</div><div class="tools"><a href="" class="expand" style="color: #FFFFFF;"><i class="fa fa-caret-down"></i></a></div></div><div class="portlet-body" style="display: none;"><table class="table table-bordered table-hover"></table></div></div>')));
+            tbody.append(tr);
+            tr.fadeIn();
+        }
+
+    }
+
+    function getDetail(oid, id) {
+        var div = "#" + id;
+        if ($(div).next().find("table").html()) {
+            return;
+        }
+
+        if (!oid) {
+            alert("订单编号为空");
+            return;
+        }
+        $.ajax({
+            url: "getDetail.do?orderId=" + oid,
+            type: "get",
+            success: function (result) {
+                if (result.state == 0) {
+                    for (var i = 0; i < result.data.length; i++) {
+                        var item = result.data[i];
+                        var tr = $("<tr></tr>");
+                        tr.append($("<td><img style='display: block;height: 50px;max-width: 100%;' src='" + item.product.image + "'/></td>"));
+                        tr.append($("<td ></td>").text(item.product.title));
+                        tr.append($("<td></td>").text(item.count + "件"));
+                        tr.append($("<td></td>").text("￥" + item.subTotal));
+                        $(div).next().find("table").append(tr);
+                    }
+                } else {
+                    alert(result.message);
+                }
+            },
+            error: function () {
+                alert("连接错误！");
+            }
+        });
+    }
+
+    function send(oid, btn) {
+        if (!oid) {
+            alert("订单编号为空");
+            return;
+        }
+        $.ajax({
+            url: "send.do?id=" + oid,
+            type: "get",
+            success: function (result) {
+                if (result.state == 0) {
+                    alert("发货成功！");
+                    $(btn).parent().html("等待收货");
+                } else {
+                    alert(result.message);
+                }
+            },
+            error: function () {
+                alert("连接错误！");
+            }
+        });
+    }
+//    ]]>
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>商品详情</title>
+    <link rel="shortcut icon" th:href="@{/image/walmart.png}" type="image/x-icon"/>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"/>
+    <link th:href="@{/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/common.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/local css/index.css}" rel="stylesheet" type="text/css"/>
+    <script th:src="@{/layui/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <style>
+         body{
+             background-color: #FFFFFF;
+         }
+        .desc>p{
+            font-size: 22px;
+            font-weight: 300;
+        }
+        .product_img{
+            background-color: #FFFFFF;
+            border-radius: 3px;
+            border: 2px solid #e1e1e1;
+        }
+         .product_info
+         {
+            padding-left:10px;
+         }
+        .product_info>p{
+            margin: 15px 0;
+            text-align: right;
+        }
+        .product_info>.title{
+            font-weight: bold;
+            text-align: left;
+        }
+        .size1{
+            font-size: 30px;
+        }
+        .product_info>.price{
+            font-weight: 500;
+            color: #1e1e1e;
+        }
+        .size2{
+            font-size: 24px;
+        }
+        .product_info>p>.price1{
+            font-weight: bold;
+            color: red;
+        }
+        .size3{
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body class="site-home">
+<!--头部模块-->
+<div th:replace="mall/common::head"></div>
+
+<div class="layui-container" id="content">
+    <!--商品详情-->
+    <div class="layui-row" style="margin-top: 10px;">
+        <div class="layui-row" id="product">
+            <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                <img class="product_img img_responsive" th:src="${product.image}" />
+            </div>
+            <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                <div class="product_info">
+                    <input type="hidden" id="productId" th:value="${product.id}"/>
+                    <p th:text="${product.title}" class="title size1"></p>
+                    <hr class="layui-bg-blue" />
+                    <p class="price size2">商城价：<span class="price1 size3" th:text="${product.shopPrice}"></span>￥</p>
+                    <hr class="layui-bg-blue" />
+                    <p class="price size2">市场价：<span class="" th:text="${product.marketPrice}"></span>￥</p>
+                    <hr class="layui-bg-blue" />
+                    <p class="price size2">为您优惠：<span class="" th:text="${product.marketPrice}-${product.shopPrice}"></span>￥</p>
+                    <hr class="layui-bg-blue" />
+                    <p ><button onclick="addCart()" class="layui-btn layui-bg-blue layui-btn-lg layui-btn-radius layui-btn-danger">加入购物车</button></p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row" style="margin-top: 50px;text-align: center;">
+            <fieldset class="layui-elem-field">
+                <legend style="font-weight: 700"><i class="fa fa-heart-o" style="color: #FF5722;"></i>商品描述<i class="fa fa-heart-o" style="color: #FF5722;"></i></legend>
+                <div class="layui-field-box desc">
+                    <p th:text="${product.desc}"></p>
+                    <hr class="layui-bg-red" />
+                </div>
+            </fieldset>
+        </div>
+           <form action="comment.do" method="post" enctype="multipart/form-data">
+               <div>
+                   <input type="hidden" name="id" th:value="${product.id}" required="required" lay-verify="required"/>
+                   <input type="hidden" name="name" th:value="123" required="required" lay-verify="required"/>
+                   <!--<input type="hidden" name="time" th:value="123" required="required" lay-verify="required"/>-->
+                     <input type="hidden" name="likes" th:value="0" required="required" lay-verify="required"/>
+               <textarea name="content" required="required" id="textarea" onKeyDown="textdown(event)"  onKeyUp="textup()" cols="87" rows="7" style="resize: none;overflow:scroll;font-size:22px" onfocus="if(value=='写评论(字数不超过一千字)'){value=''}"
+                         onblur="if (value ==''){value='写评论(字数不超过一千字)'}">写评论(字数不超过一千字)</textarea>
+                <input type="hidden" name="commentnum" th:value="0" required="required" lay-verify="required"/>
+                   <button  lay-submit="lay-submit" lay-filter="formReg" id="commit" style="float:left;margin-left:380px;margin-top:20px" onclick="comments()" class="layui-btn layui-bg-blue layui-btn-lg layui-btn-radius layui-btn-danger">发表评论</button>
+               <input type="file" th:value="123" id="commit2" required="required" lay-verify="required" style="float:left;margin-left:200px;margin-top:25px;width:70px;border-radius: 4px" onclick="" class="a-upload"></input>
+           </div>
+           </form>
+
+        <div class="layui-row" style="margin-top: 50px;text-align: center;">
+            <fieldset class="layui-elem-field">
+                <legend style="font-weight: 700"><i class="fa fa-heart-o" style="color: #FF5722;"></i>顾客评论<i class="fa fa-heart-o" style="color: #FF5722;"></i></legend>
+                <div class="layui-field-box">
+                    <div class="layui-row" style="text-align: center;">
+                        <form id="comment">
+                            <div style="font-size:20px" th:each="item,stat:${comment}">
+                                <p style="text-align:left;float:left" th:if="${item.id}%${product.id}==0" th:text="|用户:${item.name}|"></p>
+                                <!--<p style="text-align: left;padding-left: 130px" th:if="${item.id}%${product.id}==0" th:text="|时间:${item.time}|"></p>-->
+                                <p style="text-align: center" th:if="${item.id}%${product.id}==0" th:text="${item.content}"></p>
+                                <span><img class="img_responsive" th:if="${item.id}%${product.id}==0" th:src="${item.image}" /></span>
+                                <div><p style="float:right;text-align: right" th:if="${item.id}%${product.id}==0" th:text="|点赞数:${item.likes}|"></p></div>
+                                <p style="text-align: right;padding-right: 150px" th:if="${item.id}%${product.id}==0" th:text="|评论数  :${item.commentnum}|"></p>
+                            </div>
+                        </form>
+                        <a class="more" href="javascript: more();">点击加载更多</a>
+                    </div>
+                    <hr class="layui-bg-red" />
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <script>
+        //        <![CDATA[
+        function addCart() {
+            var productId = $("#productId").val();
+            if(!productId){
+                layer.msg("错误！");
+                return;
+            }
+
+            $.get("addCart.do?productId="+productId,function (data) {
+                if (data.state==0){
+                    layer.msg("添加购物车成功！");
+                }else {
+                    layer.msg(data.message);
+                }
+            });
+        }
+
+        function comments() {
+
+        }
+        //加载更多
+        function more() {
+            var load = layer.load();
+        }
+
+        //layui移动端页面优化
+        // var device = layui.device();
+        // if (device.weixin || device.ios || device.android){
+        //     $(".product_info p").attr("style","margin-left: 0;margin-bottom: 0;");
+        //     $(".layui-btn").attr("style","width:100%");
+        //     $(".size1").addClass("price1").removeClass("size1");
+        //     $(".size2").addClass("price2").removeClass("size2");
+        //     $(".size3").addClass("price3").removeClass("size3");
+        // }
+        //        ]]>
+    </script>
+</div>
+<!--底部-->
+<div th:replace="mall/common::foot"></div>
+</body>
+</html>
